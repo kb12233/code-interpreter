@@ -18,22 +18,19 @@ enum TokenType {
     AMPERSAND,
 
     // One or two character tokens.
-    BANG,
-    BANG_EQUAL,
     EQUAL,
     EQUAL_EQUAL,
     GREATER,
     GREATER_EQUAL,
     LESS,
     LESS_EQUAL,
-    GREATER_LESS,
+    LESS_GREATER,
 
     // Literals.
     IDENTIFIER,
     CHAR_LITERAL,
     STRING_LITERAL,
     INT_LITERAL,
-    BOOL_LITERAL,
     FLOAT_LITERAL,
 
     // Keywords.
@@ -42,6 +39,7 @@ enum TokenType {
     CODE,
     INT,
     CHAR,
+    STRING,
     BOOL,
     FLOAT,
     AND,
@@ -50,8 +48,8 @@ enum TokenType {
     IF,
     ELSE,
     WHILE,
-    //TRUE,
-    //FALSE,
+    TRUE,
+    FALSE,
     PRINT, //change to DISPLAY later
 
     EOF

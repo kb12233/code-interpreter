@@ -164,7 +164,9 @@ BEGIN IF
 END IF
 ```
 
+
 2. Loop Control Flow Structures
+
 a. `WHILE (<BOOL expression>)`
 
 ```

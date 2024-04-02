@@ -57,7 +57,7 @@ class Scanner {
             case '[': addToken(LEFT_BRACKET); break;
             case ']': addToken(RIGHT_BRACKET); break;
             case ',': addToken(COMMA); break;
-            case '\'': addToken(SINGLE_QOUTE); break;
+            case '\'': character(); break;
             case '-': addToken(MINUS); break;
             case '+': addToken(PLUS); break;
             case ':': addToken(COLON); break;
@@ -138,8 +138,38 @@ class Scanner {
     }
 
     private void string() {
+        StringBuilder value = new StringBuilder();
         while (peek() != '"' && !isAtEnd()) {
-            if (peek() == '\n') line++;
+            if (peek() == '\n') {
+                line++;
+            } else if (peek() == '[') {
+                // Handle escape sequence
+                advance(); // Consume '['
+                switch (peek()) {
+                    case ']':
+                        value.append(']'); break; // Append closing square brace as it's part of the escape sequence
+                    case '#':
+                        value.append('#'); break;
+                    case '\'':
+                        value.append('\''); break;
+                    case '"':
+                        value.append('"'); break;
+                    case '$':
+                        value.append('$'); break;
+                    case '&':
+                        value.append('&'); break;
+                    case '[':
+                        value.append('['); break; // For escaping opening square brace
+                    default:
+                        Code.error(line, "Invalid escape sequence.");
+                }
+                advance(); // Move past the character after '['
+                if (peek() != ']') {
+                    Code.error(line, "Unterminated escape sequence.");
+                }
+            } else {
+                value.append(peek());
+            }
             advance();
         }
 
@@ -148,13 +178,29 @@ class Scanner {
             return;
         }
 
-        // The closing ".
+        // Skip the closing "
         advance();
 
-        // Trim the surrounding quotes.
-        String value = source.substring(start + 1, current - 1);
-        addToken(STRING_LITERAL, value);
+        // No need to trim quotes as we built the value manually
+        addToken(STRING_LITERAL, value.toString());
     }
+
+    private void character() {
+        if (peek() == '\'' || isAtEnd()) {
+            Code.error(line, "Empty character literal.");
+        } else {
+            advance(); // Consume the character
+            if (peek() == '\'') {
+                advance(); // Consume the closing quote
+                // Extract the character
+                char value = source.charAt(start + 1);
+                addToken(CHAR_LITERAL, value);
+            } else {
+                Code.error(line, "Character literal too long.");
+            }
+        }
+    }
+
 
     private boolean match(char expected) {
         if (isAtEnd()) return false;

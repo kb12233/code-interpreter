@@ -122,28 +122,28 @@ class Scanner {
             String potentialConstruct = source.substring(start, lookahead).trim();
             switch (potentialConstruct) {
                 case "BEGIN CODE":
-                    addToken(BEGIN_CODE);
                     current = lookahead; // Update current to skip the entire construct
+                    addToken(BEGIN_CODE);
                     return;
                 case "END CODE":
-                    addToken(END_CODE);
                     current = lookahead;
+                    addToken(END_CODE);
                     return;
                 case "BEGIN IF":
-                    addToken(BEGIN_IF);
                     current = lookahead;
+                    addToken(BEGIN_IF);
                     return;
                 case "END IF":
-                    addToken(END_IF);
                     current = lookahead;
+                    addToken(END_IF);
                     return;
                 case "BEGIN WHILE":
-                    addToken(BEGIN_WHILE);
                     current = lookahead;
+                    addToken(BEGIN_WHILE);
                     return;
                 case "END WHILE":
-                    addToken(END_WHILE);
                     current = lookahead;
+                    addToken(END_WHILE);
                     return;
             }
         }
@@ -159,6 +159,8 @@ class Scanner {
         // Look for a fractional part.
         boolean isFloat = false;
         if (peek() == '.' && isDigit(peekNext())) {
+            isFloat = true;
+
             // Consume the "."
             advance();
 

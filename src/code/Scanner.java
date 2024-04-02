@@ -186,20 +186,55 @@ class Scanner {
     }
 
     private void character() {
-        if (peek() == '\'' || isAtEnd()) {
-            Code.error(line, "Empty character literal.");
-        } else {
-            advance(); // Consume the character
-            if (peek() == '\'') {
-                advance(); // Consume the closing quote
-                // Extract the character
-                char value = source.charAt(start + 1);
-                addToken(CHAR_LITERAL, value);
-            } else {
-                Code.error(line, "Character literal too long.");
-            }
+        if (isAtEnd()) {
+            Code.error(line, "Unterminated character literal.");
+            return;
         }
+
+        char value;
+        if (peek() == '[') { // Start of escape sequence
+            advance(); // Consume '['
+
+            switch (peek()) {
+                case ']':
+                    value = ']'; break; // Append closing square brace as it's part of the escape sequence
+                case '#':
+                    value = '#'; break;
+                case '\'':
+                    value = '\''; break;
+                case '"':
+                    value = '"'; break;
+                case '$':
+                    value = '$'; break;
+                case '&':
+                    value = '&'; break;
+                case '[':
+                    value = '['; break; // For escaping opening square brace
+                default:
+                    Code.error(line, "Invalid escape sequence in character literal.");
+                    return;
+            }
+            advance(); // Move past the character after '['
+
+            if (peek() != ']') {
+                Code.error(line, "Unterminated escape sequence in character literal.");
+                return;
+            }
+            advance(); // Consume closing ']'
+        } else {
+            value = peek(); // Regular character
+            advance(); // Consume character
+        }
+
+        if (peek() != '\'') {
+            Code.error(line, "Character literal too long or not properly closed.");
+            return;
+        }
+        advance(); // Consume closing single quote
+
+        addToken(CHAR_LITERAL, value);
     }
+
 
 
     private boolean match(char expected) {

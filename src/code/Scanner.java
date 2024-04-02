@@ -108,13 +108,48 @@ class Scanner {
     }
 
     private void identifier() {
-        while (isAlphaNumeric(peek())) {
-            advance();
-        }
+        while (isAlphaNumeric(peek())) advance();
 
         String text = source.substring(start, current);
-        TokenType type = keywords.get(text);
-        if (type == null) type = IDENTIFIER;
+
+        // Check for multi-word constructs
+        if (text.equals("BEGIN") || text.equals("END")) {
+            // Peek ahead to see if the next characters form one of the constructs
+            int lookahead = current;
+            while (lookahead < source.length() && (isAlpha(source.charAt(lookahead)) || source.charAt(lookahead) == ' ')) {
+                lookahead++;
+            }
+            String potentialConstruct = source.substring(start, lookahead).trim();
+            switch (potentialConstruct) {
+                case "BEGIN CODE":
+                    addToken(BEGIN_CODE);
+                    current = lookahead; // Update current to skip the entire construct
+                    return;
+                case "END CODE":
+                    addToken(END_CODE);
+                    current = lookahead;
+                    return;
+                case "BEGIN IF":
+                    addToken(BEGIN_IF);
+                    current = lookahead;
+                    return;
+                case "END IF":
+                    addToken(END_IF);
+                    current = lookahead;
+                    return;
+                case "BEGIN WHILE":
+                    addToken(BEGIN_WHILE);
+                    current = lookahead;
+                    return;
+                case "END WHILE":
+                    addToken(END_WHILE);
+                    current = lookahead;
+                    return;
+            }
+        }
+
+        // Fallback to single-word keywords or identifiers
+        TokenType type = keywords.getOrDefault(text, IDENTIFIER);
         addToken(type);
     }
 

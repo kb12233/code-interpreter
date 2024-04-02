@@ -34,9 +34,12 @@ enum TokenType {
     FLOAT_LITERAL,
 
     // Keywords.
-    BEGIN,
-    END,
-    CODE,
+    BEGIN_CODE,
+    END_CODE,
+    BEGIN_IF,
+    END_IF,
+    BEGIN_WHILE,
+    END_WHILE,
     INT,
     CHAR,
     STRING,

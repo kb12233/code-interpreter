@@ -31,7 +31,8 @@ class Scanner {
         keywords.put("WHILE",  WHILE);
         keywords.put("TRUE",   TRUE);
         keywords.put("FALSE",  FALSE);
-        keywords.put("PRINT",  PRINT);
+        keywords.put("DISPLAY", DISPLAY);
+        keywords.put("SCAN",   SCAN);
     }
 
     Scanner(String source) {

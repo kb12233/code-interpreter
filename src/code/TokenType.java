@@ -53,7 +53,8 @@ enum TokenType {
     WHILE,
     TRUE,
     FALSE,
-    PRINT, //change to DISPLAY later
+    DISPLAY,
+    SCAN,
 
     EOF
 }

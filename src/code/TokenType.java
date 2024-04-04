@@ -16,6 +16,7 @@ enum TokenType {
     PERCENT,
     SHARP,
     AMPERSAND,
+    NEW_LINE,
 
     // One or two character tokens.
     EQUAL,
@@ -45,6 +46,7 @@ enum TokenType {
     STRING,
     BOOL,
     FLOAT,
+    NIL,
     AND,
     OR,
     NOT,
@@ -55,6 +57,8 @@ enum TokenType {
     FALSE,
     DISPLAY,
     SCAN,
+    FUN,
+    RETURN,
 
     EOF
 }

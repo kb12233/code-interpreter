@@ -18,21 +18,24 @@ class Scanner {
 
     static {
         keywords = new HashMap<>();
-        keywords.put("INT",    INT);
-        keywords.put("CHAR",   CHAR);
-        keywords.put("STRING", STRING);
-        keywords.put("BOOL",   BOOL);
-        keywords.put("FLOAT",  FLOAT);
-        keywords.put("AND",    AND);
-        keywords.put("OR",     OR);
-        keywords.put("NOT",    NOT);
-        keywords.put("IF",     IF);
-        keywords.put("ELSE",   ELSE);
-        keywords.put("WHILE",  WHILE);
-        keywords.put("TRUE",   TRUE);
-        keywords.put("FALSE",  FALSE);
+        keywords.put("INT",     INT);
+        keywords.put("CHAR",    CHAR);
+        keywords.put("STRING",  STRING);
+        keywords.put("BOOL",    BOOL);
+        keywords.put("FLOAT",   FLOAT);
+        keywords.put("NIL",     NIL);
+        keywords.put("AND",     AND);
+        keywords.put("OR",      OR);
+        keywords.put("NOT",     NOT);
+        keywords.put("IF",      IF);
+        keywords.put("ELSE",    ELSE);
+        keywords.put("WHILE",   WHILE);
+        keywords.put("TRUE",    TRUE);
+        keywords.put("FALSE",   FALSE);
         keywords.put("DISPLAY", DISPLAY);
-        keywords.put("SCAN",   SCAN);
+        keywords.put("SCAN",    SCAN);
+        keywords.put("FUN",     FUN);
+        keywords.put("RETURN",  RETURN);
     }
 
     Scanner(String source) {
@@ -93,6 +96,7 @@ class Scanner {
                 break;
 
             case '\n':
+                addToken(NEW_LINE);
                 line++;
                 break;
             case '"': string(); break;

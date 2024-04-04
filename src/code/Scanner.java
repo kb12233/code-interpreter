@@ -155,6 +155,9 @@ class Scanner {
 
         // Fallback to single-word keywords or identifiers
         TokenType type = keywords.getOrDefault(text, IDENTIFIER);
+        //if (type == IDENTIFIER && text.equals(text.toUpperCase())) {
+        //    Code.error(line, text + " is not a recognized keyword.");
+        //}
         addToken(type);
     }
 
@@ -181,6 +184,10 @@ class Scanner {
 
     private void string() {
         StringBuilder value = new StringBuilder();
+        if (peek() == '#') {
+            Code.error(line,
+            "No escape sequence detected. To print '#', it should be surrounded with square braces (ex. [#]).");
+        }
         while (peek() != '"' && !isAtEnd()) {
             if (peek() == '\n') {
                 line++;

@@ -50,6 +50,12 @@ class Interpreter implements Expr.Visitor<Object> {
 
     private void checkNumberOperands(Token operator,
                                      Object left, Object right) {
+        if ((left instanceof Double && right instanceof Integer) || (left instanceof Integer && right instanceof Double)) {
+            throw new RuntimeError(operator,
+                    "Number operands must be of the same data type. Ex. (INT "
+                    + operator.lexeme + " INT) or " + "(FLOAT " + operator.lexeme + " FLOAT)");
+        }
+
         if ((left instanceof Double && right instanceof Double) || (left instanceof Integer && right instanceof Integer)) return;
 
         throw new RuntimeError(operator, "Operands must be numbers.");

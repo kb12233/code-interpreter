@@ -1,19 +1,6 @@
-# this is a sample program in CODE
 BEGIN CODE
-	INT x, y, z=5
-	CHAR a_1='n'
-	BOOL t=TRUE
-	x=y=4
-	a_1='c'
-	# this is a comment
-	DISPLAY: x & t & z & "[$]" & a_1 & "[#]" & "last"
-
-	IF (x < y)
-	BEGIN IF
-	    DISPLAY: "less than"
-	END IF
-	ELSE
-	BEGIN IF
-	    DISPLAY: "not less than"
-	END IF
+    DISPLAY: "one" & " two" & $ & TRUE & " or$" & FALSE
+    DISPLAY: (3 * 3)
+    DISPLAY: [[] & (2 * 3) & []]
+    DISPLAY: [#] & (2 * 3) & [#] & ['] & ["] & [$] & [&]
 END CODE

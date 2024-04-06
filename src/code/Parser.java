@@ -1,5 +1,6 @@
 package code;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static code.TokenType.*;
@@ -14,16 +15,46 @@ class Parser {
         this.tokens = tokens;
     }
 
-    Expr parse() {
-        try {
-            return expression();
-        } catch (ParseError error) {
-            return null;
+    List<Stmt> parse() {
+        List<Stmt> statements = new ArrayList<>();
+        consume(BEGIN_CODE, "Expect BEGIN_CODE at the beginning of the program.");
+        //while (!isAtEnd()) {
+        //    statements.add(statement());
+        //}
+        //if (previous().type != END_CODE) {
+        //    //consume(END_CODE, "Expect END_CODE at the end of the program.");
+        //    throw error(peek(), "Expect END_CODE at the end of the program.");
+        //}
+
+        while (!isAtEndCode()) {
+            statements.add(statement());
         }
+        consume(END_CODE, "Expect END_CODE at the end of the program.");
+
+        return statements;
     }
 
     private Expr expression() {
         return equality();
+    }
+
+    private Stmt statement() {
+        if (match(DISPLAY)) return printStatement();
+
+        return expressionStatement();
+    }
+
+    private Stmt printStatement() {
+        consume(COLON, "Expect ':' after DISPLAY keyword");
+        Expr value = expression();
+        //consume(SEMICOLON, "Expect ';' after value.");
+        return new Stmt.Print(value);
+    }
+
+    private Stmt expressionStatement() {
+        Expr expr = expression();
+        //consume(SEMICOLON, "Expect ';' after expression.");
+        return new Stmt.Expression(expr);
     }
 
     private Expr equality() {
@@ -99,6 +130,10 @@ class Parser {
             return new Expr.Grouping(expr);
         }
 
+        if (match(END_CODE) && peek().type == EOF) {
+            return new Expr.Literal(null);
+        }
+
         throw error(peek(), "Expect expression.");
     }
 
@@ -133,8 +168,16 @@ class Parser {
         return peek().type == EOF;
     }
 
+    private boolean isAtEndCode() {
+        return peek().type == END_CODE;
+    }
+
     private Token peek() {
         return tokens.get(current);
+    }
+
+    private Token peekNext() {
+        return tokens.get((current + 1));
     }
 
     private Token previous() {
@@ -150,7 +193,7 @@ class Parser {
         advance();
 
         while (!isAtEnd()) {
-            if (previous().type == NEW_LINE) return;
+            if (previous().type == SEMICOLON) return;
 
             switch (peek().type) {
                 case FUN:

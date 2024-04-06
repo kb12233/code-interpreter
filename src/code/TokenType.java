@@ -16,7 +16,7 @@ enum TokenType {
     PERCENT,
     SHARP,
     AMPERSAND,
-    NEW_LINE,
+    SEMICOLON,
 
     // One or two character tokens.
     EQUAL,

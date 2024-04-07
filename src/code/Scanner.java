@@ -36,6 +36,7 @@ class Scanner {
         keywords.put("SCAN",    SCAN);
         keywords.put("FUN",     FUN);
         keywords.put("RETURN",  RETURN);
+        keywords.put("VAR",     VAR);
     }
 
     Scanner(String source) {
@@ -56,6 +57,8 @@ class Scanner {
     private void scanToken() {
         char c = advance();
         switch (c) {
+            case '{': addToken(LEFT_BRACE); break;
+            case  '}': addToken(RIGHT_BRACE); break;
             case '(': addToken(LEFT_PAREN); break;
             case ')': addToken(RIGHT_PAREN); break;
             case '[': escapeSequence(); break;

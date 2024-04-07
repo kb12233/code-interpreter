@@ -1,6 +1,42 @@
+
 BEGIN CODE
+    INT x = 2
+    INT y = 2
+    BOOL b = TRUE
+    DISPLAY: x / y & " " & (b AND TRUE)
     DISPLAY: "one" & " two" & $ & TRUE & " or$" & FALSE
     DISPLAY: (3 * 3)
     DISPLAY: [[] & (2 * 3) & []]
     DISPLAY: [#] & (2 * 3) & [#] & ['] & ["] & [$] & [&]
+    DISPLAY: FALSE AND FALSE
+    WHILE (x <= 10)
+    BEGIN WHILE
+        DISPLAY: "x = " & x
+        x = x + 2
+    END WHILE
+
+    INT z = 1
+    WHILE (z <= 100)
+    BEGIN WHILE
+        IF (z % 3 == 0 AND z % 5 == 0)
+        BEGIN IF
+            DISPLAY: "FizzBuzz"
+        END IF
+
+        ELSE IF (z % 3 == 0)
+        BEGIN IF
+            DISPLAY: "Fizz"
+        END IF
+
+        ELSE IF (z % 5 == 0)
+        BEGIN IF
+            DISPLAY: "Buzz"
+        END IF
+
+        ELSE
+        BEGIN IF
+            DISPLAY: z
+        END IF
+        z = z + 1
+    END WHILE
 END CODE

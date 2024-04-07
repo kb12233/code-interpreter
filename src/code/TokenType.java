@@ -2,6 +2,8 @@ package code;
 
 enum TokenType {
     // Single-character tokens.
+    LEFT_BRACE,
+    RIGHT_BRACE,
     LEFT_PAREN,
     RIGHT_PAREN,
     LEFT_BRACKET,
@@ -16,7 +18,7 @@ enum TokenType {
     PERCENT,
     SHARP,
     AMPERSAND,
-    NEW_LINE,
+    SEMICOLON,
 
     // One or two character tokens.
     EQUAL,
@@ -59,6 +61,7 @@ enum TokenType {
     SCAN,
     FUN,
     RETURN,
+    VAR,
 
     EOF
 }

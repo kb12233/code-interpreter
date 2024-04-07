@@ -36,6 +36,7 @@ class Scanner {
         keywords.put("SCAN",    SCAN);
         keywords.put("FUN",     FUN);
         keywords.put("RETURN",  RETURN);
+        keywords.put("VAR",     VAR);
     }
 
     Scanner(String source) {
@@ -56,10 +57,11 @@ class Scanner {
     private void scanToken() {
         char c = advance();
         switch (c) {
+            case '{': addToken(LEFT_BRACE); break;
+            case  '}': addToken(RIGHT_BRACE); break;
             case '(': addToken(LEFT_PAREN); break;
             case ')': addToken(RIGHT_PAREN); break;
-            case '[': addToken(LEFT_BRACKET); break;
-            case ']': addToken(RIGHT_BRACKET); break;
+            case '[': escapeSequence(); break;
             case ',': addToken(COMMA); break;
             case '\'': character(); break;
             case '-': addToken(MINUS); break;
@@ -69,6 +71,8 @@ class Scanner {
             case '/': addToken(SLASH); break;
             case '%': addToken(PERCENT); break;
             case '&': addToken(AMPERSAND); break;
+            case ';': addToken(SEMICOLON); break;
+            case '$': addToken(STRING_LITERAL, "\n"); break;
             case '=':
                 addToken(match('=') ? EQUAL_EQUAL : EQUAL);
                 break;
@@ -96,7 +100,6 @@ class Scanner {
                 break;
 
             case '\n':
-                addToken(NEW_LINE);
                 line++;
                 break;
             case '"': string(); break;
@@ -196,19 +199,26 @@ class Scanner {
                 advance(); // Consume '['
                 switch (peek()) {
                     case ']':
-                        value.append(']'); break; // Append closing square brace as it's part of the escape sequence
+                        value.append(']');
+                        break; // Append closing square brace as it's part of the escape sequence
                     case '#':
-                        value.append('#'); break;
+                        value.append('#');
+                        break;
                     case '\'':
-                        value.append('\''); break;
+                        value.append('\'');
+                        break;
                     case '"':
-                        value.append('"'); break;
+                        value.append('"');
+                        break;
                     case '$':
-                        value.append('$'); break;
+                        value.append('$');
+                        break;
                     case '&':
-                        value.append('&'); break;
+                        value.append('&');
+                        break;
                     case '[':
-                        value.append('['); break; // For escaping opening square brace
+                        value.append('[');
+                        break; // For escaping opening square brace
                     default:
                         Code.error(line, "Invalid escape sequence.");
                 }
@@ -216,6 +226,20 @@ class Scanner {
                 if (peek() != ']') {
                     Code.error(line, "Unterminated escape sequence.");
                 }
+            } else if (peek() == '$') {
+                value.append('\n');
+            } else if (peek() == '#') {
+                Code.error(line, "No escape sequence detected. To print '#', it should be surrounded with square braces (ex. [#]).");
+            } else if (peek() == '&') {
+                Code.error(line, "No escape sequence detected. To print '&', it should be surrounded with square braces (ex. [&]).");
+            } else if (peek() == '\'') {
+                Code.error(line, "No escape sequence detected. To print a single quote, it should be surrounded with square braces (ex. [']).");
+            } else if (peek() == '"') {
+                Code.error(line, "No escape sequence detected. To print a double quote, it should be surrounded with square braces (ex. [\"]).");
+            } else if (peek() == '[') {
+                Code.error(line, "No escape sequence detected. To print a square brace, it should be surrounded with square braces (ex. [[]).");
+            } else if (peek() == ']') {
+                Code.error(line, "No escape sequence detected. To print a closing square brace, it should be surrounded with square braces (ex. []]).");
             } else {
                 value.append(peek());
             }
@@ -284,6 +308,45 @@ class Scanner {
         addToken(CHAR_LITERAL, value);
     }
 
+    private void escapeSequence() {
+        StringBuilder value = new StringBuilder();
+        // Handle escape sequence
+        switch (peek()) {
+            case ']':
+                value.append(']');
+                break; // Append closing square brace as it's part of the escape sequence
+            case '#':
+                value.append('#');
+                break;
+            case '\'':
+                value.append('\'');
+                break;
+            case '"':
+                value.append('"');
+                break;
+            case '$':
+                value.append('$');
+                break;
+            case '&':
+                value.append('&');
+                break;
+            case '[':
+                value.append('[');
+                break; // For escaping opening square brace
+            default:
+                Code.error(line, "Invalid escape sequence.");
+                return;
+        }
+        advance(); // Move past the character after '['
+        if (peek() != ']') {
+            Code.error(line, "Unterminated escape sequence.");
+            return;
+        }
+
+        addToken(STRING_LITERAL, value.toString());
+        advance();
+    }
+
 
 
     private boolean match(char expected) {
@@ -302,6 +365,11 @@ class Scanner {
     private char peekNext() {
         if (current + 1 >= source.length()) return '\0';
         return source.charAt(current + 1);
+    }
+
+    private char peekPrev() {
+        if (current - 1 < 0) return '\0';
+        return source.charAt(current - 1);
     }
 
     private boolean isAlpha(char c) {

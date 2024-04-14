@@ -8,6 +8,7 @@ abstract class Stmt {
         R visitExpressionStmt(Expression stmt);
         R visitIfStmt(If stmt);
         R visitPrintStmt(Print stmt);
+        R visitScanStmt(Scan stmt);
         R visitVarStmt(Var stmt);
         R visitWhileStmt(While stmt);
     }
@@ -63,10 +64,25 @@ abstract class Stmt {
 
         final Expr expression;
     }
+
+    static class Scan extends Stmt {
+        Scan(List<Token> variables) {
+            this.variables = variables;
+        }
+
+        @Override
+        <R> R accept(Visitor<R> visitor) {
+            return visitor.visitScanStmt(this);
+        }
+
+        final List<Token> variables;
+    }
+
     static class Var extends Stmt {
-        Var(Token name, Expr initializer) {
+        Var(Token name, Expr initializer, TokenType type) {
             this.name = name;
             this.initializer = initializer;
+            this.type = type;
         }
 
         @Override
@@ -76,6 +92,7 @@ abstract class Stmt {
 
         final Token name;
         final Expr initializer;
+        final TokenType type;
     }
     static class While extends Stmt {
         While(Expr condition, Stmt body) {

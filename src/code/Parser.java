@@ -58,6 +58,7 @@ class Parser {
     private Stmt statement() {
         if (match(IF)) return ifStatement();
         if (match(DISPLAY)) return printStatement();
+        if (match(SCAN)) return scanStatement();
         if (match(WHILE)) return whileStatement();
 
         return expressionStatement();
@@ -99,6 +100,16 @@ class Parser {
         return new Stmt.Print(value);
     }
 
+    private Stmt scanStatement() {
+        consume(COLON, "Expect ':' after SCAN keyword");
+        List<Token> variables = new ArrayList<>();
+        do {
+            variables.add(consume(IDENTIFIER, "Expect variable name."));
+        } while (match(COMMA));
+
+        return new Stmt.Scan(variables);
+    }
+
     private List<Stmt> varDeclaration(TokenType type) {
         List<Stmt> declarations = new ArrayList<>();
 
@@ -127,9 +138,9 @@ class Parser {
                     && !(((Expr.Literal)initializer).value instanceof Boolean)) {
                 throw error(previous(), "Invalid assignment value. Value should be of type BOOL");
             }
-            declarations.add(new Stmt.Var(name, initializer));
+            declarations.add(new Stmt.Var(name, initializer, type));
         } else {
-            declarations.add(new Stmt.Var(name, null));
+            declarations.add(new Stmt.Var(name, null, type));
         }
 
         while (match(COMMA)) {
@@ -157,9 +168,9 @@ class Parser {
                         && !(((Expr.Literal)initializer).value instanceof Boolean)) {
                     throw error(previous(), "Invalid assignment value. Value should be of type BOOL");
                 }
-                declarations.add(new Stmt.Var(name, initializer));
+                declarations.add(new Stmt.Var(name, initializer, type));
             } else {
-                declarations.add(new Stmt.Var(name, null));
+                declarations.add(new Stmt.Var(name, null, type));
             }
         }
 

@@ -1,6 +1,7 @@
 package code;
 
 import java.util.List;
+import java.util.Scanner;
 class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
 
     private Environment environment = new Environment();
@@ -135,7 +136,7 @@ class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
 
             for (Stmt statement : statements) {
                 if (statement instanceof Stmt.Var varStmt) {
-                    environment.define(varStmt.name.lexeme, varStmt.initializer != null ? evaluate(varStmt.initializer) : null);
+                    environment.define(varStmt.name.lexeme, varStmt.initializer != null ? evaluate(varStmt.initializer) : null, varStmt.type);
                 } else {
                     execute(statement);
                 }
@@ -175,13 +176,48 @@ class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
     }
 
     @Override
+    public Void visitScanStmt(Stmt.Scan stmt) {
+        String input = new Scanner(System.in).nextLine();
+        String[] values = input.split(",");
+        if (values.length != stmt.variables.size()) {
+            throw new RuntimeError(stmt.variables.get(0), "Number of input values does not match number of variables.");
+        }
+        for (int i = 0; i < values.length; i++) {
+            Token variable = stmt.variables.get(i);
+            Object value = values[i];
+            TokenType type = environment.getType(variable.lexeme);
+            switch (type) {
+                case INT:
+                    value = Integer.parseInt(values[i]);
+                    break;
+                case FLOAT:
+                    value = Double.parseDouble(values[i]);
+                    break;
+                case BOOL:
+                    value = Boolean.parseBoolean(values[i].toLowerCase());
+                    break;
+                case CHAR:
+                    value = values[i].charAt(0);
+                    break;
+                case STRING:
+                    value = values[i];
+                    break;
+                default:
+                    throw new RuntimeError(variable, "Unsupported variable type.");
+            }
+            environment.assign(variable, value);
+        }
+        return null;
+    }
+
+    @Override
     public Void visitVarStmt(Stmt.Var stmt) {
         Object value = null;
         if (stmt.initializer != null) {
             value = evaluate(stmt.initializer);
         }
 
-        environment.define(stmt.name.lexeme, value);
+        environment.define(stmt.name.lexeme, value, stmt.type);
         return null;
     }
 

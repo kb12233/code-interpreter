@@ -2,6 +2,7 @@ package code;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import static code.TokenType.*;
 
@@ -27,7 +28,7 @@ class Parser {
         //}
 
         while (!isAtEndCode()) {
-            statements.add(declaration());
+            statements.addAll(Objects.requireNonNull(declaration()));
         }
         consume(END_CODE, "Expect END_CODE at the end of the program.");
 
@@ -38,14 +39,16 @@ class Parser {
         return assignment();
     }
 
-    private Stmt declaration() {
+    private List<Stmt> declaration() {
         try {
             if (match(VAR, INT, CHAR, STRING, BOOL, FLOAT)) {
                 TokenType type = previous().type;
                 return varDeclaration(type);
             }
 
-            return statement();
+            List<Stmt> statements = new ArrayList<>();
+            statements.add(statement());
+            return statements;
         } catch (ParseError error) {
             synchronize();
             return null;
@@ -96,10 +99,11 @@ class Parser {
         return new Stmt.Print(value);
     }
 
-    private Stmt varDeclaration(TokenType type) {
-        Token name = consume(IDENTIFIER, "Expect variable name.");
+    private List<Stmt> varDeclaration(TokenType type) {
+        List<Stmt> declarations = new ArrayList<>();
 
-        Expr initializer = null;
+        Token name = consume(IDENTIFIER, "Expect variable name.");
+        Expr initializer;
         if (match(EQUAL)) {
             initializer = expression();
             if (initializer instanceof Expr.Literal
@@ -123,10 +127,43 @@ class Parser {
                     && !(((Expr.Literal)initializer).value instanceof Boolean)) {
                 throw error(previous(), "Invalid assignment value. Value should be of type BOOL");
             }
+            declarations.add(new Stmt.Var(name, initializer));
+        } else {
+            declarations.add(new Stmt.Var(name, null));
         }
 
-        //consume(SEMICOLON, "Expect ';' after variable declaration.");
-        return new Stmt.Var(name, initializer);
+        while (match(COMMA)) {
+            name = consume(IDENTIFIER, "Expect variable name.");
+            if (match(EQUAL)) {
+                initializer = expression();
+                if (initializer instanceof Expr.Literal
+                        && type == TokenType.INT
+                        && !(((Expr.Literal)initializer).value instanceof Integer)) {
+                    throw error(previous(), "Invalid assignment value. Value should be of type INT");
+                } else if (initializer instanceof Expr.Literal
+                        && type == TokenType.FLOAT
+                        && !(((Expr.Literal)initializer).value instanceof Double)) {
+                    throw error(previous(), "Invalid assignment value. Value should be of type FLOAT");
+                } else if (initializer instanceof Expr.Literal
+                        && type == TokenType.CHAR
+                        && !(((Expr.Literal)initializer).value instanceof Character)) {
+                    throw error(previous(), "Invalid assignment value. Value should be of type CHAR");
+                } else if (initializer instanceof Expr.Literal
+                        && type == TokenType.STRING
+                        && !(((Expr.Literal)initializer).value instanceof String)) {
+                    throw error(previous(), "Invalid assignment value. Value should be of type STRING");
+                } else if (initializer instanceof Expr.Literal
+                        && type == TokenType.BOOL
+                        && !(((Expr.Literal)initializer).value instanceof Boolean)) {
+                    throw error(previous(), "Invalid assignment value. Value should be of type BOOL");
+                }
+                declarations.add(new Stmt.Var(name, initializer));
+            } else {
+                declarations.add(new Stmt.Var(name, null));
+            }
+        }
+
+        return declarations;
     }
 
     private Stmt whileStatement() {
@@ -152,7 +189,7 @@ class Parser {
         List<Stmt> statements = new ArrayList<>();
 
         while (!check(RIGHT_BRACE) && !isAtEnd()) {
-            statements.add(declaration());
+            statements.addAll(Objects.requireNonNull(declaration()));
         }
 
         consume(RIGHT_BRACE, "Expect '}' after block.");
@@ -163,7 +200,7 @@ class Parser {
         List<Stmt> statements = new ArrayList<>();
 
         while (!check(END_IF) && !isAtEnd()) {
-            statements.add(declaration());
+            statements.addAll(Objects.requireNonNull(declaration()));
         }
 
         if (isAtEnd()) {
@@ -178,7 +215,7 @@ class Parser {
         List<Stmt> statements = new ArrayList<>();
 
         while (!check(END_WHILE) && !isAtEnd()) {
-            statements.add(declaration());
+            statements.addAll(Objects.requireNonNull(declaration()));
         }
 
         if (isAtEnd()) {
@@ -372,18 +409,9 @@ class Parser {
 
         while (!isAtEnd()) {
             switch (peek().type) {
-                case FUN:
-                case INT:
-                case CHAR:
-                case STRING:
-                case BOOL:
-                case FLOAT:
-                case WHILE:
-                case IF:
-                case DISPLAY:
-                case SCAN:
-                case RETURN:
+                case FUN, INT, CHAR, STRING, BOOL, FLOAT, WHILE, IF, DISPLAY, SCAN, RETURN -> {
                     return;
+                }
             }
 
             advance();

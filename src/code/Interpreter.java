@@ -128,14 +128,17 @@ class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
         stmt.accept(this);
     }
 
-    void executeBlock(List<Stmt> statements,
-                      Environment environment) {
+    void executeBlock(List<Stmt> statements, Environment environment) {
         Environment previous = this.environment;
         try {
             this.environment = environment;
 
             for (Stmt statement : statements) {
-                execute(statement);
+                if (statement instanceof Stmt.Var varStmt) {
+                    environment.define(varStmt.name.lexeme, varStmt.initializer != null ? evaluate(varStmt.initializer) : null);
+                } else {
+                    execute(statement);
+                }
             }
         } finally {
             this.environment = previous;

@@ -16,6 +16,7 @@ public class Code {
     public static void main(String[] args) throws IOException {
         //uncomment the following commented line and comment the others to test
         //runFile("C:\\Users\\User\\IdeaProjects\\code-interpreter\\src\\test.code");
+        //runFile("D:\\Program Files\\JetBrains\\IdeaProjects\\code-interpreter\\src\\test.code");
         if (args.length > 1) {
             System.out.println("Usage: code [script]");
             System.exit(64);

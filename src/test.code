@@ -1,6 +1,8 @@
 BEGIN CODE
-    INT x = 2, y = 2
-    BOOL b = TRUE, c = FALSE
+    INT x, y
+    BOOL b, c
+    SCAN: x, y, b, c
+
     DISPLAY: x / y & " " & (b AND TRUE)
     DISPLAY: "one" & " two" & $ & TRUE & " or$" & FALSE
     DISPLAY: (3 * 3)

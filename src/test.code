@@ -16,7 +16,7 @@ BEGIN CODE
         x = x + 2
     END WHILE
 
-    INT z = 1, a, b = 100
+    INT z = 1, a
     FLOAT f = 3.14, g
     STRING s = "hello", t
     CHAR ch = 'a', ch2

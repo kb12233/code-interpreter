@@ -84,6 +84,16 @@ class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
         throw new RuntimeError(operator, "Operands must be numbers.");
     }
 
+    private boolean isExistingVar(Token varToken) {
+        Object varObject;
+        try {
+            varObject = environment.get(varToken);
+            return true;
+        } catch (RuntimeError error) {
+            return false;
+        }
+    }
+
     private boolean isTruthy(Object object) {
         // if (object == null) return false;
         // if (object instanceof Boolean) return (boolean)object;
@@ -212,6 +222,9 @@ class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
 
     @Override
     public Void visitVarStmt(Stmt.Var stmt) {
+        if (isExistingVar(stmt.name)) {
+            throw new RuntimeError(stmt.name, "Variable " + "'" + stmt.name.lexeme + "'" + " already exists!");
+        }
         Object value = null;
         if (stmt.initializer != null) {
             value = evaluate(stmt.initializer);

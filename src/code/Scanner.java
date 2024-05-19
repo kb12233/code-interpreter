@@ -137,6 +137,14 @@ class Scanner {
                     current = lookahead;
                     addToken(END_CODE);
                     return;
+                case "BEGIN FOR":
+                    current = lookahead;
+                    addToken(BEGIN_FOR);
+                    return;
+                case "END FOR":
+                    current = lookahead;
+                    addToken(END_FOR);
+                    return;
                 case "BEGIN IF":
                     current = lookahead;
                     addToken(BEGIN_IF);

@@ -39,10 +39,13 @@ enum TokenType {
     // Keywords.
     BEGIN_CODE,
     END_CODE,
+    BEGIN_FOR,
+    END_FOR,
     BEGIN_IF,
     END_IF,
     BEGIN_WHILE,
     END_WHILE,
+    FOR,
     INT,
     CHAR,
     STRING,

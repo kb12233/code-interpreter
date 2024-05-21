@@ -30,6 +30,7 @@ class Scanner {
         keywords.put("IF",      IF);
         keywords.put("ELSE",    ELSE);
         keywords.put("WHILE",   WHILE);
+        keywords.put("FOR",     FOR);
         keywords.put("TRUE",    TRUE);
         keywords.put("FALSE",   FALSE);
         keywords.put("DISPLAY", DISPLAY);
@@ -307,7 +308,7 @@ class Scanner {
             advance(); // Consume character
         }
 
-        if (peek() != '\'') {
+        if (peek() != '\'') {   
             Code.error(line, "Character literal too long or not properly closed.");
             return;
         }

@@ -21,6 +21,8 @@ BEGIN CODE
     STRING s = "hello", t
     CHAR ch = 'a', ch2
 
+    DISPLAY: $ & "FizzBuzz using WHILE loop"
+
     WHILE (z <= 100)
     BEGIN WHILE
         IF (z % 3 == 0 AND z % 5 == 0)
@@ -44,4 +46,29 @@ BEGIN CODE
         END IF
         z = z + 1
     END WHILE
+
+    DISPLAY: $ & "FizzBuzz using FOR loop"
+
+    FOR (INT num = 1; num <= 100; num = num + 1)
+        BEGIN FOR
+            IF (num % 3 == 0 AND num % 5 == 0)
+            BEGIN IF
+                DISPLAY: "FizzBuzz"
+            END IF
+
+            ELSE IF (num % 3 == 0)
+            BEGIN IF
+                DISPLAY: "Fizz"
+            END IF
+
+            ELSE IF (num % 5 == 0)
+            BEGIN IF
+                DISPLAY: "Buzz"
+            END IF
+
+            ELSE
+            BEGIN IF
+                DISPLAY: num
+            END IF
+        END FOR
 END CODE
